@@ -780,4 +780,8 @@ class Config {
 		// TODO Default value will be set to true, once all mobile clients support it.
 		return $this->appConfig->getAppValueBool('call_end_to_end_encryption');
 	}
+
+	public function isChatRelayEnabled(): bool {
+		return $this->appConfig->getAppValueBool('chat_relay');
+	}
 }
