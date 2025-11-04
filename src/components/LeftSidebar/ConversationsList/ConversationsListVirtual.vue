@@ -27,7 +27,7 @@ const props = defineProps<{
 const itemHeight = computed(() => props.compact ? 28 + 2 * 2 : AVATAR.SIZE.DEFAULT + 2 * 4 + 2 * 2)
 
 const { list, containerProps, wrapperProps } = useVirtualList<Conversation>(toRef(() => props.conversations), {
-	itemHeight: itemHeight.value,
+	itemHeight: () => itemHeight.value,
 	overscan: 10,
 })
 
@@ -113,16 +113,19 @@ defineExpose({
 </script>
 
 <template>
-	<li v-bind="containerProps">
+	<li
+		:ref="containerProps.ref"
+		:style="containerProps.style"
+		@scroll="containerProps.onScroll">
 		<LoadingPlaceholder v-if="loading" type="conversations" />
 		<ul
 			v-else
-			v-bind="wrapperProps">
+			:style="wrapperProps.style">
 			<ConversationItem
 				v-for="item in list"
 				:key="item.data.id"
 				:item="item.data"
-				:compact="compact" />
+				:compact />
 		</ul>
 	</li>
 </template>
