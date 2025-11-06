@@ -492,23 +492,15 @@ describe('MessageItem.vue', () => {
 			expect(wrapper.findComponent(MessageButtonsBar).exists()).toBe(false)
 		})
 
-		test('Buttons bar is rendered on mouse over', async () => {
-			messageProps.message.sendingFailure = 'timeout'
+		test('render actions menu on click', async () => {
 			const wrapper = mountMessage(messageProps)
 
-			// Initial state
-			expect(wrapper.findComponent(MessageButtonsBar).exists()).toBe(false)
+			expect(wrapper.findComponent(MessageButtonsBar).exists()).toBeTruthy()
+			expect(wrapper.findComponent(NcActions).exists()).toBeFalsy()
 
-			// Mouseover
-			await wrapper.find('.message').trigger('mouseover')
-			expect(wrapper.findComponent(MessageButtonsBar).exists()).toBe(true)
-
-			// Actions are rendered with MessageButtonsBar
-			expect(wrapper.findComponent(NcActions).exists()).toBe(true)
-
-			// Mouseleave
-			await wrapper.find('.message').trigger('mouseleave')
-			expect(wrapper.findComponent(MessageButtonsBar).exists()).toBe(false)
+			// click on button placeholder to show actions menu
+			await wrapper.findAllComponents(NcButton).at(-1).trigger('click')
+			expect(wrapper.findComponent(NcActions).exists()).toBeTruthy()
 		})
 	})
 

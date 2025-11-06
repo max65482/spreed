@@ -11,10 +11,8 @@
 		:data-next-message-id="nextMessageId"
 		:data-previous-message-id="previousMessageId"
 		class="message"
-		:class="{ 'message--hovered': showMessageButtonsBar }"
-		tabindex="0"
-		@mouseover="handleMouseover"
-		@mouseleave="handleMouseleave">
+		:class="{ 'message--hovered': isMessageButtonsBarActive }"
+		tabindex="0">
 		<div
 			:class="{
 				'normal-message-body': !isSystemMessage && !isDeletedMessage,
@@ -213,7 +211,6 @@ export default {
 	data() {
 		return {
 			loading: false,
-			isHovered: false,
 			isDeleting: false,
 			// whether the message was seen, only used if this was marked as last read message
 			seen: false,
@@ -350,13 +347,16 @@ export default {
 
 		showMessageButtonsBar() {
 			return !this.isSystemMessage && !this.isDeletedMessage && !this.isTemporary
-				&& (this.isHovered || this.isActionMenuOpen || this.isEmojiPickerOpen || this.isFollowUpEmojiPickerOpen
-					|| this.isReactionsMenuOpen || this.isForwarderOpen || this.isTranslateDialogOpen)
+		},
+
+		isMessageButtonsBarActive() {
+			return this.isActionMenuOpen || this.isEmojiPickerOpen || this.isFollowUpEmojiPickerOpen
+				|| this.isReactionsMenuOpen || this.isForwarderOpen || this.isTranslateDialogOpen
 		},
 
 		showCombinedSystemMessageToggle() {
 			return this.isSystemMessage && !this.isDeletedMessage && !this.isTemporary
-				&& this.isCombinedSystemMessage && (this.isHovered || !this.isCombinedSystemMessageCollapsed)
+				&& this.isCombinedSystemMessage && !this.isCombinedSystemMessageCollapsed
 		},
 
 		readInfo() {
@@ -383,18 +383,6 @@ export default {
 		lastReadMessageVisibilityChanged([{ isIntersecting }]) {
 			if (isIntersecting) {
 				this.seen = true
-			}
-		},
-
-		handleMouseover() {
-			if (!this.isHovered) {
-				this.isHovered = true
-			}
-		},
-
-		handleMouseleave() {
-			if (this.isHovered) {
-				this.isHovered = false
 			}
 		},
 
@@ -470,9 +458,17 @@ export default {
 
 	&:hover .normal-message-body,
 	&:hover .combined-system,
-	&--hovered .normal-message-body {
+	&--hovered .normal-message-body,
+	&:focus .normal-message-body,
+	&:focus-within .normal-message-body {
 		border-radius: 8px;
 		background-color: var(--color-background-hover);
+	}
+
+	&--hovered .message-buttons-bar,
+	&:hover .message-buttons-bar,
+	&:focus-within .message-buttons-bar {
+		display: flex;
 	}
 
 	&--hovered :deep(.reaction-button--hoverable),
@@ -544,7 +540,7 @@ export default {
 }
 
 .message-buttons-bar {
-	display: flex;
+	display: none;
 	inset-inline-end: 14px;
 	top: 0;
 	position: sticky;
