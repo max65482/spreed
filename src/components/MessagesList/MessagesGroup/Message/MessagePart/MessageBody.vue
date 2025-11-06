@@ -49,9 +49,7 @@
 		<div
 			v-else
 			class="message-main__text markdown-message"
-			:class="{ 'message-highlighted': isNewPollMessage }"
-			@mouseover="handleMarkdownMouseOver"
-			@mouseleave="handleMarkdownMouseLeave">
+			:class="{ 'message-highlighted': isNewPollMessage }">
 			<!-- Replied parent message -->
 			<MessageQuote v-if="showQuote" :message="message.parent" />
 
@@ -432,16 +430,33 @@ export default {
 		showJoinCallButton() {
 			EventBus.emit('scroll-chat-to-bottom', { smooth: true })
 		},
+
+		containsCodeBlocks(value) {
+			if (value) {
+				this.$refs.messageMain.addEventListener('mouseover', this.handleMarkdownMouseOver)
+				this.$refs.messageMain.addEventListener('mouseleave', this.handleMarkdownMouseLeave)
+			} else {
+				this.$refs.messageMain.removeEventListener('mouseover', this.handleMarkdownMouseOver)
+				this.$refs.messageMain.removeEventListener('mouseleave', this.handleMarkdownMouseLeave)
+			}
+		},
 	},
 
 	mounted() {
 		if (this.isEditable) {
 			EventBus.on('editing-message-processing', this.setIsEditing)
 		}
+		if (this.containsCodeBlocks) {
+			this.$refs.messageMain.addEventListener('mouseover', this.handleMarkdownMouseOver)
+			this.$refs.messageMain.addEventListener('mouseleave', this.handleMarkdownMouseLeave)
+		}
 	},
 
 	beforeUnmount() {
 		EventBus.off('editing-message-processing', this.setIsEditing)
+
+		this.$refs.messageMain.removeEventListener('mouseover', this.handleMarkdownMouseOver)
+		this.$refs.messageMain.removeEventListener('mouseleave', this.handleMarkdownMouseLeave)
 	},
 
 	methods: {
