@@ -34,7 +34,6 @@
 					:id="message.id"
 					:token="message.token"
 					:can-react="canReact"
-					:show-controls="isHovered || isFollowUpEmojiPickerOpen"
 					@emoji-picker-toggled="toggleFollowUpEmojiPicker" />
 			</MessageBody>
 		</div>
@@ -474,6 +473,12 @@ export default {
 	&--hovered .normal-message-body {
 		border-radius: 8px;
 		background-color: var(--color-background-hover);
+	}
+
+	&--hovered :deep(.reaction-button--hoverable),
+	&:hover :deep(.reaction-button--hoverable),
+	&:focus-within :deep(.reaction-button--hoverable) {
+		visibility: visible;
 	}
 }
 

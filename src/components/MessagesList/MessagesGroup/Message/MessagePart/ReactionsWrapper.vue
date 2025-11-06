@@ -45,31 +45,29 @@
 
 		<!-- all reactions button -->
 		<NcButton
-			v-if="showControls"
+			class="reaction-button--hoverable"
 			size="small"
 			:title="t('spreed', 'Show all reactions')"
 			:aria-label="t('spreed', 'Show all reactions')"
 			@click="showAllReactions = true">
 			<IconHeartOutline :size="15" />
 		</NcButton>
-		<span v-else class="reaction-button--thumbnail" />
 
 		<!-- More reactions picker -->
 		<NcEmojiPicker
-			v-if="canReact && showControls"
+			v-if="canReact"
 			:per-line="5"
 			@select="handleReactionClick"
 			@after-show="emitEmojiPickerStatus"
 			@after-hide="emitEmojiPickerStatus">
 			<NcButton
 				size="small"
-				class="reaction-button--trigger"
+				class="reaction-button--trigger reaction-button--hoverable"
 				:title="t('spreed', 'Add more reactions')"
 				:aria-label="t('spreed', 'Add more reactions')">
 				<IconEmoticonPlusOutline :size="15" />
 			</NcButton>
 		</NcEmojiPicker>
-		<span v-else-if="canReact" class="reaction-button--thumbnail" />
 
 		<!-- all reactions modal-->
 		<ReactionsList
@@ -130,11 +128,6 @@ export default {
 		id: {
 			type: [String, Number],
 			required: true,
-		},
-
-		showControls: {
-			type: Boolean,
-			default: false,
 		},
 	},
 
@@ -298,10 +291,8 @@ export default {
 		height: 100%;
 	}
 
-	.reaction-button--thumbnail {
-		height: 100%;
-		width: var(--minimal-button-width);
-		pointer-events: none;
+	.reaction-button--hoverable {
+		visibility: hidden;
 	}
 }
 
