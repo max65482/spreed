@@ -255,6 +255,27 @@ class FeatureContext implements Context, SnippetAcceptingContext {
 		$this->sharingContext = $environment->getContext('SharingContext');
 	}
 
+	#[BeforeScenario]
+	public function checkVersionRequirement(BeforeScenarioScope $scope) {
+		foreach ($scope->getScenario()->getTags() as $tag) {
+			if (preg_match('/^Version\((?<server>[A-Z]*)(?<compare>[><=]*=?)(?<version>[\d.]+)\)$/', $tag, $matches)) {
+				$this->usingServer($matches['server']);
+				$this->runOcc(['status', '--output=json']);
+				$statusOutput = $this->getLastStdOut();
+
+				$status = json_decode($statusOutput, true);
+
+				$versionConstraint = version_compare($status['version'], $matches['version'], $matches['compare']);
+				if (!$versionConstraint) {
+					throw new \RuntimeException(
+						'Skipping test as ' . $matches['server'] . ' server version does not match: '
+						. $status['version'] . ' ' . $matches['compare'] . ' ' . $matches['version']
+					);
+				}
+			}
+		}
+	}
+
 	#[AfterScenario]
 	public function tearDown(): void {
 		foreach (['LOCAL', 'REMOTE'] as $server) {
